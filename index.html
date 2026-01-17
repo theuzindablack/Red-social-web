@@ -1,87 +1,82 @@
 <!DOCTYPE html>
-<html lang="pt-pt">
+<html lang="pt-br">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Z-Vault</title>
+    <title>Z-Vault P2P - Aberto</title>
     <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
     <style>
         :root { --wa-bg: #0b141a; --wa-header: #202c33; --wa-green: #00a884; --wa-msg-me: #005c4b; --wa-msg-other: #202c33; --wa-text: #e9edef; }
         body { background: var(--wa-bg); color: var(--wa-text); font-family: sans-serif; margin: 0; overflow: hidden; }
         .screen { display: none; flex-direction: column; height: 100vh; }
         .active { display: flex; }
+
+        /* Mídia */
+        img, video { max-width: 100%; border-radius: 8px; margin-top: 5px; display: block; }
+        audio { width: 100%; height: 35px; margin-top: 5px; }
+
+        /* Header */
+        .header-home, .header-chat { background: var(--wa-header); padding: 15px; border-bottom: 1px solid #222; }
+        .perfil-info { font-size: 11px; color: var(--wa-green); margin-top: 5px; display: flex; align-items: center; gap: 8px; }
         
-        /* Login Box */
-        #login-screen { justify-content: center; align-items: center; background: #0b141a; }
-        .login-box { background: #202c33; padding: 30px; border-radius: 15px; text-align: center; width: 280px; }
-        input { background: #2a3942; color: white; border: 1px solid #333; padding: 12px; border-radius: 5px; width: 100%; margin: 10px 0; box-sizing: border-box; }
-        
-        /* Layout */
-        .header { background: var(--wa-header); padding: 15px; display: flex; justify-content: space-between; align-items: center; }
+        /* Lista */
         .chat-list { flex: 1; overflow-y: auto; }
-        .item { padding: 15px; border-bottom: 1px solid #1c272d; cursor: pointer; display: flex; align-items: center; gap: 15px; }
-        .avatar { width: 45px; height: 45px; background: #3d474b; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; }
-        
-        #chat-container { flex: 1; overflow-y: auto; padding: 15px; display: flex; flex-direction: column; gap: 8px; }
-        .msg { max-width: 85%; padding: 10px; border-radius: 8px; font-size: 15px; }
+        .chat-item { display: flex; align-items: center; padding: 15px; border-bottom: 1px solid #1c272d; cursor: pointer; }
+        .avatar { width: 45px; height: 45px; background: #6a7175; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; margin-right: 15px; }
+        .btn-copy { background: #333; border: none; color: var(--wa-green); border-radius: 4px; padding: 4px 8px; font-size: 10px; cursor: pointer; }
+
+        /* Chat */
+        #chat-container { flex: 1; overflow-y: auto; padding: 15px; background-color: #0b141a; display: flex; flex-direction: column; gap: 8px; }
+        .msg { max-width: 85%; padding: 8px 10px; border-radius: 8px; font-size: 15px; position: relative; }
         .enviada { background: var(--wa-msg-me); align-self: flex-end; }
         .recebida { background: var(--wa-msg-other); align-self: flex-start; }
-        img, video { max-width: 100%; border-radius: 8px; }
+        .time { font-size: 10px; color: #8696a0; float: right; margin-top: 5px; margin-left: 8px; }
 
-        .footer { background: var(--wa-header); padding: 10px; display: flex; gap: 8px; }
+        /* Inputs */
+        .footer { background: var(--wa-header); padding: 10px; display: flex; align-items: center; gap: 8px; }
         .input-bg { flex: 1; background: #2a3942; border-radius: 25px; padding: 5px 15px; display: flex; align-items: center; }
-        .fab { position: fixed; bottom: 25px; right: 25px; width: 55px; height: 55px; background: var(--wa-green); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 24px; color: white; cursor: pointer; z-index: 99; }
-        
-        /* Botão Copiar */
-        .copy-btn { background: #333; border: none; color: var(--wa-green); border-radius: 5px; padding: 4px 8px; font-size: 10px; cursor: pointer; margin-left: 8px; vertical-align: middle; }
-        .copy-btn:active { background: #444; }
+        .input-bg input { flex: 1; background: none; border: none; color: white; padding: 10px 0; outline: none; }
+        .btn-send { background: var(--wa-green); border: none; border-radius: 50%; width: 45px; height: 45px; color: white; cursor: pointer; font-size: 20px; }
+        .fab { position: fixed; bottom: 25px; right: 25px; width: 60px; height: 60px; background: var(--wa-green); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 24px; color: white; cursor: pointer; box-shadow: 0 4px 12px rgba(0,0,0,0.5); }
     </style>
 </head>
 <body>
 
-    <div id="login-screen" class="screen active">
-        <div class="login-box">
-            <h2 id="login-title" style="color:var(--wa-green); margin:0;">Z-Vault</h2>
-            <div id="setup-fields">
-                <input type="text" id="setup-nome" placeholder="Teu Nome">
+    <div id="home-screen" class="screen active">
+        <div class="header-home">
+            <h1 style="margin:0; font-size:20px; color:#8696a0;">Z-Vault P2P</h1>
+            <div class="perfil-info">
+                EU: <b id="meu-nome-fixo">...</b> | ID: <b id="meu-id-fixo">...</b>
+                <button class="btn-copy" onclick="copiarID()">COPIAR ID</button>
             </div>
-            <input type="password" id="pass-input" placeholder="Senha">
-            <button onclick="entrar()" style="background:var(--wa-green); color:white; border:none; width:100%; padding:12px; border-radius:5px; font-weight:bold; cursor:pointer; margin-top:10px;">ENTRAR</button>
-        </div>
-    </div>
-
-    <div id="home-screen" class="screen">
-        <div class="header">
-            <div>
-                <b id="display-nome">...</b><br>
-                <span id="display-id" style="color:var(--wa-green); font-family:monospace; font-size:12px;"></span>
-                <button class="copy-btn" onclick="copiarID()">COPIAR ID</button>
-            </div>
-            <button onclick="location.reload()" style="background:none; border:none; color:#f15c5c; font-size:20px; cursor:pointer;">✕</button>
         </div>
         <div class="chat-list" id="lista-conversas"></div>
         <div class="fab" onclick="novoContacto()">➕</div>
     </div>
 
     <div id="chat-screen" class="screen">
-        <div class="header">
-            <button onclick="irHome()" style="background:none; border:none; color:white; font-size:20px;">←</button>
-            <div id="chat-titulo" style="font-weight:bold; flex:1; margin-left:15px;">Nome</div>
+        <div class="header-chat" style="display:flex; align-items:center; gap:10px;">
+            <button onclick="voltar()" style="background:none; border:none; color:white; font-size:24px; cursor:pointer;">←</button>
+            <div class="avatar" id="chat-avatar" style="width:35px; height:35px; font-size:14px;">?</div>
+            <div>
+                <h3 id="chat-nome" style="margin:0; font-size:16px;">Nome</h3>
+                <span id="chat-id-display" style="font-size:11px; color:#8696a0; font-family:monospace;">ID: ...</span>
+            </div>
         </div>
         <div id="chat-container"></div>
         <div class="footer">
             <div class="input-bg">
-                <label style="cursor:pointer; margin-right:10px;">📎<input type="file" style="display:none;" onchange="enviarMidia(this)"></label>
-                <input type="text" id="msg-input" placeholder="Mensagem" style="background:none; border:none; margin:0;">
+                <label style="cursor:pointer; font-size:22px; margin-right:10px;">📎<input type="file" style="display:none;" onchange="enviarMidia(this)"></label>
+                <input type="text" id="msg-input" placeholder="Mensagem">
             </div>
-            <button onclick="enviarTexto()" style="background:var(--wa-green); border:none; width:45px; height:45px; border-radius:50%; color:white;">➤</button>
+            <button class="btn-send" onclick="enviarTexto()">➤</button>
         </div>
     </div>
 
     <script>
-        let db, peer, MEU_ID, MEU_NOME, SENHA_DB, CHAT_ATUAL = null;
+        let db, peer, MEU_ID, MEU_NOME, CHAT_ATUAL = null;
 
-        const request = indexedDB.open("ZVault_V9", 1);
+        const request = indexedDB.open("ZVault_NoPass", 1);
         request.onupgradeneeded = e => {
             const d = e.target.result;
             d.createObjectStore("mensagens", { autoIncrement: true });
@@ -92,120 +87,127 @@
         request.onsuccess = e => {
             db = e.target.result;
             db.transaction("config").objectStore("config").get("perfil").onsuccess = r => {
-                const d = r.target.result;
-                if(d) {
-                    MEU_ID = d.id; MEU_NOME = d.nome; SENHA_DB = d.senha;
-                    document.getElementById('setup-fields').style.display = 'none';
-                    document.getElementById('login-title').innerText = "Olá, " + MEU_NOME;
+                let d = r.target.result;
+                if(!d) {
+                    const nome = prompt("Seu Nome:");
+                    const id = "ID-" + Math.floor(1000 + Math.random() * 9000);
+                    d = {id, nome};
+                    db.transaction("config","readwrite").objectStore("config").put(d, "perfil");
                 }
+                MEU_ID = d.id; MEU_NOME = d.nome;
+                document.getElementById('meu-nome-fixo').innerText = MEU_NOME;
+                document.getElementById('meu-id-fixo').innerText = MEU_ID;
+                conectarPeer();
+                renderizarHome();
             };
         };
 
-        function entrar() {
-            const pass = document.getElementById('pass-input').value;
-            const nomeInput = document.getElementById('setup-nome').value;
-
-            if (!SENHA_DB) {
-                if (!nomeInput || !pass) return alert("Preenche o nome e a senha!");
-                const id = "ID-" + Math.floor(1000 + Math.random() * 9000);
-                db.transaction("config","readwrite").objectStore("config").put({id, nome: nomeInput, senha: pass}, "perfil");
-                location.reload();
-            } else {
-                if (pass === SENHA_DB) {
-                    document.getElementById('login-screen').classList.remove('active');
-                    document.getElementById('home-screen').classList.add('active');
-                    document.getElementById('display-nome').innerText = MEU_NOME;
-                    document.getElementById('display-id').innerText = MEU_ID;
-                    peer = new Peer(MEU_ID, { host:'0.peerjs.com', secure:true, port:443 });
-                    peer.on('connection', c => c.on('data', d => receive(d)));
+        function conectarPeer() {
+            peer = new Peer(MEU_ID, { host:'0.peerjs.com', secure:true, port:443 });
+            peer.on('connection', conn => {
+                conn.on('data', data => {
+                    db.transaction("contatos", "readwrite").objectStore("contatos").put({ id: data.origem, nome: data.remetente });
+                    salvarNoBanco(data.origem, data, 'recebida');
                     renderizarHome();
-                } else alert("Senha incorreta!");
-            }
-        }
-
-        function copiarID() {
-            if (MEU_ID) {
-                navigator.clipboard.writeText(MEU_ID).then(() => {
-                    alert("ID Copiado para a área de transferência: " + MEU_ID);
                 });
-            }
-        }
-
-        function receive(d) {
-            db.transaction("contatos","readwrite").objectStore("contatos").put({id: d.origem, nome: d.remetente});
-            salvarMsg(d.origem, d, 'recebida');
+            });
         }
 
         function enviarTexto() {
-            const t = document.getElementById('msg-input').value;
-            if(t && CHAT_ATUAL) {
-                const msg = {tipo:'texto', conteudo:t, origem:MEU_ID, remetente:MEU_NOME};
-                peer.connect(CHAT_ATUAL).on('open', function(){ this.send(msg); });
-                salvarMsg(CHAT_ATUAL, msg, 'enviada');
-                document.getElementById('msg-input').value="";
-            }
+            const input = document.getElementById('msg-input');
+            if(!input.value || !CHAT_ATUAL) return;
+            const msgObj = { tipo: 'texto', conteudo: input.value, origem: MEU_ID, remetente: MEU_NOME };
+            disparar(msgObj);
+            input.value = "";
         }
 
         function enviarMidia(input) {
             const f = input.files[0];
-            const r = new FileReader();
-            r.onload = e => {
-                const msg = {tipo: f.type.split('/')[0], conteudo: e.target.result, origem: MEU_ID, remetente: MEU_NOME};
-                peer.connect(CHAT_ATUAL).on('open', function(){ this.send(msg); });
-                salvarMsg(CHAT_ATUAL, msg, 'enviada');
+            if(!f || !CHAT_ATUAL) return;
+            const reader = new FileReader();
+            reader.onload = e => {
+                const tipo = f.type.split('/')[0];
+                const msgObj = { tipo: tipo, conteudo: e.target.result, origem: MEU_ID, remetente: MEU_NOME };
+                disparar(msgObj);
             };
-            r.readAsDataURL(f);
+            reader.readAsDataURL(f);
         }
 
-        function salvarMsg(chatId, obj, direcao) {
-            db.transaction("mensagens","readwrite").objectStore("mensagens").add({...obj, chatId, direcao});
-            if(CHAT_ATUAL === chatId) carregarMensagens();
+        function disparar(obj) {
+            const conn = peer.connect(CHAT_ATUAL);
+            conn.on('open', () => {
+                conn.send(obj);
+                salvarNoBanco(CHAT_ATUAL, obj, 'enviada');
+            });
         }
 
-        function renderizarHome() {
-            const l = document.getElementById('lista-conversas'); l.innerHTML = "";
-            db.transaction("contatos").objectStore("contatos").getAll().onsuccess = e => {
-                e.target.result.forEach(c => {
-                    const div = document.createElement('div'); div.className = 'item';
-                    div.onclick = () => abrirChat(c.id, c.nome);
-                    div.innerHTML = `<div class="avatar">${c.nome[0]}</div><div><b>${c.nome}</b><br><small>${c.id}</small></div>`;
-                    l.appendChild(div);
-                });
-            };
-        }
-
-        function abrirChat(id, nome) {
-            CHAT_ATUAL = id; document.getElementById('chat-titulo').innerText = nome;
-            document.getElementById('home-screen').classList.remove('active');
-            document.getElementById('chat-screen').classList.add('active');
-            carregarMensagens();
+        function salvarNoBanco(chatId, obj, direcao) {
+            const tx = db.transaction("mensagens", "readwrite");
+            tx.objectStore("mensagens").add({ ...obj, chatId, direcao, hora: new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}) });
+            tx.oncomplete = () => { if(CHAT_ATUAL === chatId) carregarMensagens(); };
         }
 
         function carregarMensagens() {
-            const cont = document.getElementById('chat-container'); cont.innerHTML = "";
+            const container = document.getElementById('chat-container');
+            container.innerHTML = "";
             db.transaction("mensagens").objectStore("mensagens").openCursor().onsuccess = e => {
                 const c = e.target.result;
                 if(c) {
                     if(c.value.chatId === CHAT_ATUAL) {
                         const d = c.value;
-                        const div = document.createElement('div'); div.className = `msg ${d.direcao}`;
-                        if(d.tipo==='texto') div.innerText = d.conteudo;
-                        else if(d.tipo==='image') div.innerHTML = `<img src="${d.conteudo}">`;
-                        else if(d.tipo==='video') div.innerHTML = `<video src="${d.conteudo}" controls></video>`;
-                        cont.appendChild(div);
+                        const div = document.createElement('div');
+                        div.className = `msg ${d.direcao}`;
+                        let html = "";
+                        if(d.tipo === 'texto') html = `<div>${d.conteudo}</div>`;
+                        else if(d.tipo === 'image') html = `<img src="${d.conteudo}">`;
+                        else if(d.tipo === 'video') html = `<video src="${d.conteudo}" controls></video>`;
+                        else if(d.tipo === 'audio') html = `<audio src="${d.conteudo}" controls></audio>`;
+                        div.innerHTML = `${html}<span class="time">${d.hora}</span>`;
+                        container.appendChild(div);
                     }
                     c.continue();
                 }
-                cont.scrollTop = cont.scrollHeight;
+                container.scrollTop = container.scrollHeight;
             };
         }
 
-        function irHome() { CHAT_ATUAL=null; document.getElementById('chat-screen').classList.remove('active'); document.getElementById('home-screen').classList.add('active'); renderizarHome(); }
+        function copiarID() {
+            navigator.clipboard.writeText(MEU_ID);
+            alert("ID Copiado!");
+        }
+
+        function renderizarHome() {
+            const lista = document.getElementById('lista-conversas');
+            lista.innerHTML = "";
+            db.transaction("contatos").objectStore("contatos").getAll().onsuccess = e => {
+                e.target.result.forEach(c => {
+                    const div = document.createElement('div'); div.className = 'chat-item';
+                    div.onclick = () => abrirChat(c.id, c.nome);
+                    div.innerHTML = `<div class="avatar">${c.nome[0].toUpperCase()}</div><div><h3>${c.nome}</h3><span style="font-size:12px;color:var(--wa-green)">${c.id}</span></div>`;
+                    lista.appendChild(div);
+                });
+            };
+        }
+
+        function abrirChat(id, nome) {
+            CHAT_ATUAL = id;
+            document.getElementById('chat-nome').innerText = nome;
+            document.getElementById('chat-id-display').innerText = "ID: " + id;
+            document.getElementById('chat-avatar').innerText = nome[0].toUpperCase();
+            document.getElementById('home-screen').classList.remove('active');
+            document.getElementById('chat-screen').classList.add('active');
+            carregarMensagens();
+        }
+
+        function voltar() { CHAT_ATUAL = null; document.getElementById('chat-screen').classList.remove('active'); document.getElementById('home-screen').classList.add('active'); renderizarHome(); }
         
         function novoContacto() {
-            const id = prompt("ID do contacto (Ex: ID-1234):");
-            const n = prompt("Nome do contacto:");
-            if(id && n) { db.transaction("contatos","readwrite").objectStore("contatos").put({id, nome:n}); renderizarHome(); }
+            const id = prompt("ID (Ex: ID-1234):");
+            const n = prompt("Nome:");
+            if(id && n) {
+                db.transaction("contatos", "readwrite").objectStore("contatos").put({ id, nome: n });
+                renderizarHome();
+            }
         }
     </script>
 </body>
