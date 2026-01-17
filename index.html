@@ -1,86 +1,87 @@
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="pt-pt">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Z-Vault P2P - Secure</title>
+    <title>Z-Vault</title>
     <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
     <style>
         :root { --wa-bg: #0b141a; --wa-header: #202c33; --wa-green: #00a884; --wa-msg-me: #005c4b; --wa-msg-other: #202c33; --wa-text: #e9edef; }
         body { background: var(--wa-bg); color: var(--wa-text); font-family: sans-serif; margin: 0; overflow: hidden; }
-        
         .screen { display: none; flex-direction: column; height: 100vh; }
         .active { display: flex; }
-
-        /* Login Screen */
-        #login-screen { align-items: center; justify-content: center; background: #0b141a; }
-        .login-box { background: #202c33; padding: 30px; border-radius: 15px; text-align: center; width: 85%; max-width: 320px; box-shadow: 0 10px 25px rgba(0,0,0,0.5); }
-        .login-box h2 { color: var(--wa-green); margin-bottom: 10px; }
-        .login-box input { width: 100%; padding: 12px; margin: 15px 0; border-radius: 5px; border: 1px solid #333; background: #2a3942; color: white; text-align: center; font-size: 16px; box-sizing: border-box; }
         
-        /* Header Home */
-        .header-home { background: var(--wa-header); padding: 15px; display: flex; justify-content: space-between; align-items: center; }
-        .btn-logout { background: transparent; border: 1px solid #f15c5c; color: #f15c5c; padding: 5px 12px; border-radius: 15px; font-size: 12px; cursor: pointer; }
-
-        /* Estilos do Chat e Lista (Consolidado) */
+        /* Login Box */
+        #login-screen { justify-content: center; align-items: center; background: #0b141a; }
+        .login-box { background: #202c33; padding: 30px; border-radius: 15px; text-align: center; width: 280px; }
+        input { background: #2a3942; color: white; border: 1px solid #333; padding: 12px; border-radius: 5px; width: 100%; margin: 10px 0; box-sizing: border-box; }
+        
+        /* Layout */
+        .header { background: var(--wa-header); padding: 15px; display: flex; justify-content: space-between; align-items: center; }
         .chat-list { flex: 1; overflow-y: auto; }
-        .chat-item { padding: 15px; border-bottom: 1px solid #1c272d; cursor: pointer; display: flex; align-items: center; gap: 15px; }
-        .avatar { width: 45px; height: 45px; background: #6a7175; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; }
+        .item { padding: 15px; border-bottom: 1px solid #1c272d; cursor: pointer; display: flex; align-items: center; gap: 15px; }
+        .avatar { width: 45px; height: 45px; background: #3d474b; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; }
         
-        #chat-container { flex: 1; overflow-y: auto; padding: 15px; background-color: #0b141a; display: flex; flex-direction: column; gap: 8px; }
-        .msg { max-width: 85%; padding: 10px; border-radius: 8px; font-size: 15px; position: relative; }
+        #chat-container { flex: 1; overflow-y: auto; padding: 15px; display: flex; flex-direction: column; gap: 8px; }
+        .msg { max-width: 85%; padding: 10px; border-radius: 8px; font-size: 15px; }
         .enviada { background: var(--wa-msg-me); align-self: flex-end; }
         .recebida { background: var(--wa-msg-other); align-self: flex-start; }
-        
-        .footer { background: var(--wa-header); padding: 10px; display: flex; align-items: center; gap: 8px; }
+        img, video { max-width: 100%; border-radius: 8px; }
+
+        .footer { background: var(--wa-header); padding: 10px; display: flex; gap: 8px; }
         .input-bg { flex: 1; background: #2a3942; border-radius: 25px; padding: 5px 15px; display: flex; align-items: center; }
-        .input-bg input { flex: 1; background: none; border: none; color: white; padding: 10px; outline: none; }
-        .fab { position: fixed; bottom: 25px; right: 25px; width: 60px; height: 60px; background: var(--wa-green); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 24px; color: white; cursor: pointer; box-shadow: 0 4px 12px rgba(0,0,0,0.5); }
+        .fab { position: fixed; bottom: 25px; right: 25px; width: 55px; height: 55px; background: var(--wa-green); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 24px; color: white; cursor: pointer; z-index: 99; }
+        
+        /* Botão Copiar */
+        .copy-btn { background: #333; border: none; color: var(--wa-green); border-radius: 5px; padding: 4px 8px; font-size: 10px; cursor: pointer; margin-left: 8px; vertical-align: middle; }
+        .copy-btn:active { background: #444; }
     </style>
 </head>
 <body>
 
     <div id="login-screen" class="screen active">
         <div class="login-box">
-            <h2 id="welcome-msg">Z-Vault</h2>
-            <p id="sub-msg" style="font-size: 12px; color: #8696a0;">Acesse sua conta privada</p>
-            <input type="password" id="pass-input" placeholder="Sua Senha">
-            <button onclick="logar()" style="background:var(--wa-green); color:white; border:none; padding:12px; border-radius:5px; width:100%; cursor:pointer; font-weight:bold;">ENTRAR</button>
+            <h2 id="login-title" style="color:var(--wa-green); margin:0;">Z-Vault</h2>
+            <div id="setup-fields">
+                <input type="text" id="setup-nome" placeholder="Teu Nome">
+            </div>
+            <input type="password" id="pass-input" placeholder="Senha">
+            <button onclick="entrar()" style="background:var(--wa-green); color:white; border:none; width:100%; padding:12px; border-radius:5px; font-weight:bold; cursor:pointer; margin-top:10px;">ENTRAR</button>
         </div>
     </div>
 
     <div id="home-screen" class="screen">
-        <div class="header-home">
+        <div class="header">
             <div>
-                <h1 style="margin:0; font-size:18px;">Z-Vault</h1>
-                <small id="meu-id-display" style="color:var(--wa-green); font-family:monospace;"></small>
+                <b id="display-nome">...</b><br>
+                <span id="display-id" style="color:var(--wa-green); font-family:monospace; font-size:12px;"></span>
+                <button class="copy-btn" onclick="copiarID()">COPIAR ID</button>
             </div>
-            <button class="btn-logout" onclick="sair()">SAIR</button>
+            <button onclick="location.reload()" style="background:none; border:none; color:#f15c5c; font-size:20px; cursor:pointer;">✕</button>
         </div>
         <div class="chat-list" id="lista-conversas"></div>
         <div class="fab" onclick="novoContacto()">➕</div>
     </div>
 
     <div id="chat-screen" class="screen">
-        <div class="header-home" style="justify-content: flex-start; gap: 15px;">
-            <button onclick="irHome()" style="background:none; border:none; color:white; font-size:20px; cursor:pointer;">←</button>
-            <div id="chat-nome-titulo" style="font-weight:bold;">Nome</div>
+        <div class="header">
+            <button onclick="irHome()" style="background:none; border:none; color:white; font-size:20px;">←</button>
+            <div id="chat-titulo" style="font-weight:bold; flex:1; margin-left:15px;">Nome</div>
         </div>
         <div id="chat-container"></div>
         <div class="footer">
             <div class="input-bg">
-                <label style="cursor:pointer; font-size:20px; margin-right:10px;">📎<input type="file" style="display:none;" onchange="enviarMidia(this)"></label>
-                <input type="text" id="msg-input" placeholder="Mensagem">
+                <label style="cursor:pointer; margin-right:10px;">📎<input type="file" style="display:none;" onchange="enviarMidia(this)"></label>
+                <input type="text" id="msg-input" placeholder="Mensagem" style="background:none; border:none; margin:0;">
             </div>
-            <button onclick="enviarTexto()" style="background:var(--wa-green); border:none; width:45px; height:45px; border-radius:50%; color:white; cursor:pointer;">➤</button>
+            <button onclick="enviarTexto()" style="background:var(--wa-green); border:none; width:45px; height:45px; border-radius:50%; color:white;">➤</button>
         </div>
     </div>
 
     <script>
-        let db, peer, MEU_ID, MEU_NOME, SENHA_SALVA, CHAT_ATUAL = null;
+        let db, peer, MEU_ID, MEU_NOME, SENHA_DB, CHAT_ATUAL = null;
 
-        // Inicializa Banco de Dados
-        const request = indexedDB.open("ZVault_V6_LoginSystem", 1);
+        const request = indexedDB.open("ZVault_V9", 1);
         request.onupgradeneeded = e => {
             const d = e.target.result;
             d.createObjectStore("mensagens", { autoIncrement: true });
@@ -90,157 +91,121 @@
 
         request.onsuccess = e => {
             db = e.target.result;
-            verificarSeContaExiste();
-        };
-
-        function verificarSeContaExiste() {
-            const store = db.transaction("config", "readonly").objectStore("config");
-            store.get("perfil").onsuccess = res => {
-                const d = res.target.result;
-                if (d) {
-                    MEU_ID = d.id; MEU_NOME = d.nome; SENHA_SALVA = d.senha;
-                    document.getElementById('welcome-msg').innerText = "Bem-vindo, " + MEU_NOME;
-                    document.getElementById('sub-msg').innerText = "Conta: " + MEU_ID;
-                } else {
-                    criarNovaConta();
+            db.transaction("config").objectStore("config").get("perfil").onsuccess = r => {
+                const d = r.target.result;
+                if(d) {
+                    MEU_ID = d.id; MEU_NOME = d.nome; SENHA_DB = d.senha;
+                    document.getElementById('setup-fields').style.display = 'none';
+                    document.getElementById('login-title').innerText = "Olá, " + MEU_NOME;
                 }
             };
-        }
+        };
 
-        function criarNovaConta() {
-            const nome = prompt("Crie seu Nome de Perfil:");
-            const senha = prompt("Crie sua Senha de Acesso:");
-            if(!nome || !senha) return window.location.reload();
-            
-            const id = "ID-" + Math.floor(1000 + Math.random() * 9000);
-            const dados = { nome, id, senha };
-            
-            db.transaction("config", "readwrite").objectStore("config").put(dados, "perfil");
-            window.location.reload();
-        }
+        function entrar() {
+            const pass = document.getElementById('pass-input').value;
+            const nomeInput = document.getElementById('setup-nome').value;
 
-        function logar() {
-            const input = document.getElementById('pass-input').value;
-            if (input === SENHA_SALVA) {
-                document.getElementById('login-screen').classList.remove('active');
-                document.getElementById('home-screen').classList.add('active');
-                document.getElementById('meu-id-display').innerText = MEU_ID;
-                inicializarP2P();
-                renderizarLista();
+            if (!SENHA_DB) {
+                if (!nomeInput || !pass) return alert("Preenche o nome e a senha!");
+                const id = "ID-" + Math.floor(1000 + Math.random() * 9000);
+                db.transaction("config","readwrite").objectStore("config").put({id, nome: nomeInput, senha: pass}, "perfil");
+                location.reload();
             } else {
-                alert("Senha Incorreta!");
+                if (pass === SENHA_DB) {
+                    document.getElementById('login-screen').classList.remove('active');
+                    document.getElementById('home-screen').classList.add('active');
+                    document.getElementById('display-nome').innerText = MEU_NOME;
+                    document.getElementById('display-id').innerText = MEU_ID;
+                    peer = new Peer(MEU_ID, { host:'0.peerjs.com', secure:true, port:443 });
+                    peer.on('connection', c => c.on('data', d => receive(d)));
+                    renderizarHome();
+                } else alert("Senha incorreta!");
             }
         }
 
-        function sair() {
-            if(confirm("Deseja sair da conta? Você precisará da senha para voltar.")) {
-                if(peer) peer.destroy();
-                document.getElementById('pass-input').value = "";
-                document.getElementById('home-screen').classList.remove('active');
-                document.getElementById('chat-screen').classList.remove('active');
-                document.getElementById('login-screen').classList.add('active');
-            }
-        }
-
-        function inicializarP2P() {
-            peer = new Peer(MEU_ID);
-            peer.on('connection', conn => {
-                conn.on('data', data => {
-                    db.transaction("contatos", "readwrite").objectStore("contatos").put({ id: data.origem, nome: data.remetente });
-                    salvarNoBanco(data.origem, data, 'recebida');
+        function copiarID() {
+            if (MEU_ID) {
+                navigator.clipboard.writeText(MEU_ID).then(() => {
+                    alert("ID Copiado para a área de transferência: " + MEU_ID);
                 });
-            });
+            }
+        }
+
+        function receive(d) {
+            db.transaction("contatos","readwrite").objectStore("contatos").put({id: d.origem, nome: d.remetente});
+            salvarMsg(d.origem, d, 'recebida');
         }
 
         function enviarTexto() {
-            const txt = document.getElementById('msg-input').value;
-            if(!txt || !CHAT_ATUAL) return;
-            const obj = { tipo: 'texto', conteudo: txt, origem: MEU_ID, remetente: MEU_NOME };
-            transmitir(obj);
-            document.getElementById('msg-input').value = "";
+            const t = document.getElementById('msg-input').value;
+            if(t && CHAT_ATUAL) {
+                const msg = {tipo:'texto', conteudo:t, origem:MEU_ID, remetente:MEU_NOME};
+                peer.connect(CHAT_ATUAL).on('open', function(){ this.send(msg); });
+                salvarMsg(CHAT_ATUAL, msg, 'enviada');
+                document.getElementById('msg-input').value="";
+            }
         }
 
         function enviarMidia(input) {
             const f = input.files[0];
-            const reader = new FileReader();
-            reader.onload = e => {
-                const obj = { tipo: f.type.split('/')[0], conteudo: e.target.result, origem: MEU_ID, remetente: MEU_NOME };
-                transmitir(obj);
+            const r = new FileReader();
+            r.onload = e => {
+                const msg = {tipo: f.type.split('/')[0], conteudo: e.target.result, origem: MEU_ID, remetente: MEU_NOME};
+                peer.connect(CHAT_ATUAL).on('open', function(){ this.send(msg); });
+                salvarMsg(CHAT_ATUAL, msg, 'enviada');
             };
-            reader.readAsDataURL(f);
+            r.readAsDataURL(f);
         }
 
-        function transmitir(obj) {
-            const conn = peer.connect(CHAT_ATUAL);
-            conn.on('open', () => {
-                conn.send(obj);
-                salvarNoBanco(CHAT_ATUAL, obj, 'enviada');
-            });
+        function salvarMsg(chatId, obj, direcao) {
+            db.transaction("mensagens","readwrite").objectStore("mensagens").add({...obj, chatId, direcao});
+            if(CHAT_ATUAL === chatId) carregarMensagens();
         }
 
-        function salvarNoBanco(chatId, obj, direcao) {
-            const tx = db.transaction("mensagens", "readwrite");
-            tx.objectStore("mensagens").add({ ...obj, chatId, direcao });
-            tx.oncomplete = () => carregarMensagens();
-        }
-
-        function renderizarLista() {
-            const lista = document.getElementById('lista-conversas');
-            lista.innerHTML = "";
+        function renderizarHome() {
+            const l = document.getElementById('lista-conversas'); l.innerHTML = "";
             db.transaction("contatos").objectStore("contatos").getAll().onsuccess = e => {
                 e.target.result.forEach(c => {
-                    const item = document.createElement('div');
-                    item.className = 'chat-item';
-                    item.onclick = () => abrirChat(c.id, c.nome);
-                    item.innerHTML = `<div class="avatar">${c.nome[0].toUpperCase()}</div><div><b>${c.nome}</b><br><small style="color:var(--wa-green)">${c.id}</small></div>`;
-                    lista.appendChild(item);
+                    const div = document.createElement('div'); div.className = 'item';
+                    div.onclick = () => abrirChat(c.id, c.nome);
+                    div.innerHTML = `<div class="avatar">${c.nome[0]}</div><div><b>${c.nome}</b><br><small>${c.id}</small></div>`;
+                    l.appendChild(div);
                 });
             };
         }
 
         function abrirChat(id, nome) {
-            CHAT_ATUAL = id;
-            document.getElementById('chat-nome-titulo').innerText = nome;
+            CHAT_ATUAL = id; document.getElementById('chat-titulo').innerText = nome;
             document.getElementById('home-screen').classList.remove('active');
             document.getElementById('chat-screen').classList.add('active');
             carregarMensagens();
         }
 
-        function irHome() {
-            CHAT_ATUAL = null;
-            document.getElementById('chat-screen').classList.remove('active');
-            document.getElementById('home-screen').classList.add('active');
-            renderizarLista();
-        }
-
         function carregarMensagens() {
-            const container = document.getElementById('chat-container');
-            container.innerHTML = "";
+            const cont = document.getElementById('chat-container'); cont.innerHTML = "";
             db.transaction("mensagens").objectStore("mensagens").openCursor().onsuccess = e => {
                 const c = e.target.result;
                 if(c) {
                     if(c.value.chatId === CHAT_ATUAL) {
                         const d = c.value;
-                        const div = document.createElement('div');
-                        div.className = `msg ${d.direcao}`;
-                        if(d.tipo === 'texto') div.innerText = d.conteudo;
-                        else if(d.tipo === 'image') div.innerHTML = `<img src="${d.conteudo}">`;
-                        else if(d.tipo === 'video') div.innerHTML = `<video src="${d.conteudo}" controls></video>`;
-                        container.appendChild(div);
+                        const div = document.createElement('div'); div.className = `msg ${d.direcao}`;
+                        if(d.tipo==='texto') div.innerText = d.conteudo;
+                        else if(d.tipo==='image') div.innerHTML = `<img src="${d.conteudo}">`;
+                        else if(d.tipo==='video') div.innerHTML = `<video src="${d.conteudo}" controls></video>`;
+                        cont.appendChild(div);
                     }
                     c.continue();
                 }
-                container.scrollTop = container.scrollHeight;
+                cont.scrollTop = cont.scrollHeight;
             };
         }
 
+        function irHome() { CHAT_ATUAL=null; document.getElementById('chat-screen').classList.remove('active'); document.getElementById('home-screen').classList.add('active'); renderizarHome(); }
+        
         function novoContacto() {
-            const id = prompt("ID do Amigo (ID-XXXX):");
-            const nome = prompt("Nome dele:");
-            if(id && nome) {
-                db.transaction("contatos", "readwrite").objectStore("contatos").put({ id, nome });
-                renderizarLista();
-            }
+            const id = prompt("ID do contacto (Ex: ID-1234):");
+            const n = prompt("Nome do contacto:");
+            if(id && n) { db.transaction("contatos","readwrite").objectStore("contatos").put({id, nome:n}); renderizarHome(); }
         }
     </script>
 </body>
