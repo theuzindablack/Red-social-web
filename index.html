@@ -1,50 +1,40 @@
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="pt-pt">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Z-Vault Pro</title>
+    <title>Z-Vault Pro - Grupos</title>
     <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
     <style>
-        :root { --wa-bg: #0b141a; --wa-header: #202c33; --wa-green: #00a884; --wa-msg-me: #005c4b; --wa-msg-other: #202c33; --wa-text: #e9edef; }
-        
+        :root { --wa-bg: #0b141a; --wa-header: #202c33; --wa-green: #00a884; --wa-msg-me: #005c4b; --wa-msg-other: #202c33; --wa-text: #e9edef; --danger: #ff4b4b; }
         * { box-sizing: border-box; }
         body { background: var(--wa-bg); color: var(--wa-text); font-family: sans-serif; margin: 0; padding: 0; height: 100dvh; width: 100vw; overflow: hidden; }
-
         .screen { display: none; flex-direction: column; height: 100dvh; width: 100%; position: absolute; top: 0; left: 0; }
         .active { display: flex; }
 
         /* Headers */
-        .header { background: var(--wa-header); padding: 10px 15px; display: flex; justify-content: space-between; align-items: center; min-height: 60px; z-index: 5; }
+        .header { background: var(--wa-header); padding: 10px 15px; display: flex; justify-content: space-between; align-items: center; min-height: 65px; z-index: 5; }
         .header-info h1 { margin: 0; font-size: 18px; color: #8696a0; }
-        .perfil-row { font-size: 11px; color: var(--wa-green); display: flex; align-items: center; gap: 5px; margin-top: 2px; }
 
         /* Listas */
-        .content-scroll { flex: 1; overflow-y: auto; padding-bottom: 80px; }
+        .content-scroll { flex: 1; overflow-y: auto; padding-bottom: 90px; }
         .item { display: flex; align-items: center; padding: 12px 15px; border-bottom: 1px solid #1c272d; cursor: pointer; }
         .avatar { width: 45px; height: 45px; background: #3d474b; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; margin-right: 15px; flex-shrink: 0; }
 
         /* Chat */
-        #chat-container { flex: 1; overflow-y: auto; padding: 15px; display: flex; flex-direction: column; gap: 8px; background-image: url('https://user-images.githubusercontent.com/15075759/28719144-86dc0f70-73b1-11e7-911d-60d70fcded21.png'); background-opacity: 0.05; }
-        .msg { max-width: 85%; padding: 8px 10px; border-radius: 8px; font-size: 15px; position: relative; box-shadow: 0 1px 1px rgba(0,0,0,0.2); }
+        #chat-container { flex: 1; overflow-y: auto; padding: 15px; display: flex; flex-direction: column; gap: 8px; }
+        .msg { max-width: 85%; padding: 8px 10px; border-radius: 8px; font-size: 15px; }
         .enviada { background: var(--wa-msg-me); align-self: flex-end; }
         .recebida { background: var(--wa-msg-other); align-self: flex-start; }
-        img, video { max-width: 100%; border-radius: 5px; margin: 5px 0; }
         .time { font-size: 10px; color: rgba(255,255,255,0.5); float: right; margin-top: 5px; margin-left: 8px; }
 
-        /* Rodapé de Input - Fixado */
-        .footer { background: var(--wa-header); padding: 8px 12px; display: flex; align-items: center; gap: 8px; min-height: 60px; }
-        .input-bg { flex: 1; background: #2a3942; border-radius: 25px; padding: 0 15px; display: flex; align-items: center; height: 45px; }
+        /* Footer */
+        .footer { background: var(--wa-header); padding: 10px 12px; display: flex; align-items: center; gap: 8px; min-height: 70px; }
+        .input-bg { flex: 1; background: #2a3942; border-radius: 25px; padding: 0 15px; display: flex; align-items: center; height: 48px; }
         .input-bg input { flex: 1; background: none; border: none; color: white; padding: 10px 0; outline: none; font-size: 16px; }
+        .btn-action { background: var(--wa-green); border: none; border-radius: 50%; width: 45px; height: 45px; color: white; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 20px; }
         
-        .btn-action { background: var(--wa-green); border: none; border-radius: 50%; width: 45px; height: 45px; color: white; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 20px; flex-shrink: 0; }
-        .btn-icon { background: none; border: none; color: #8696a0; font-size: 22px; cursor: pointer; padding: 0 5px; }
-
-        /* FABs */
-        .fab-group { position: fixed; bottom: 20px; right: 20px; display: flex; flex-direction: column; gap: 12px; z-index: 10; }
-        .fab { width: 55px; height: 55px; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-size: 24px; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.4); }
-
-        .btn-copy { background: #333; border: none; color: var(--wa-green); padding: 3px 7px; font-size: 9px; border-radius: 4px; cursor: pointer; text-transform: uppercase; }
+        .btn-link { background: #333; color: var(--wa-green); border: none; padding: 5px 10px; border-radius: 4px; font-size: 11px; cursor: pointer; margin-left: 10px; }
     </style>
 </head>
 <body>
@@ -53,35 +43,30 @@
         <div class="header">
             <div class="header-info">
                 <h1>Z-Vault P2P</h1>
-                <div class="perfil-row">
-                    <b id="meu-nome-txt">...</b> | ID: <b id="meu-id-txt">...</b>
-                    <button class="btn-copy" onclick="copiarLink()">Convite 🔗</button>
-                </div>
+                <div style="font-size:11px; color:var(--wa-green);">EU: <b id="meu-nome-txt">...</b> | ID: <b id="meu-id-txt">...</b></div>
             </div>
-            <button class="btn-icon" onclick="abrirPerfil()">👤</button>
+            <button onclick="abrirPerfil()" style="background:none; border:none; font-size:22px; cursor:pointer;">👤</button>
         </div>
         <div class="content-scroll" id="lista-conversas"></div>
-        <div class="fab-group">
-            <div class="fab" style="background:#34b7f1;" onclick="novoGrupo()">👥</div>
-            <div class="fab" style="background:var(--wa-green);" onclick="novoContacto()">➕</div>
+        <div style="position:fixed; bottom:20px; right:20px; display:flex; flex-direction:column; gap:12px;">
+            <div onclick="novoGrupo()" style="width:55px; height:55px; border-radius:50%; background:#34b7f1; display:flex; align-items:center; justify-content:center; color:white; font-size:24px; box-shadow: 0 4px 10px #000;">👥</div>
+            <div onclick="novoContacto()" style="width:55px; height:55px; border-radius:50%; background:var(--wa-green); display:flex; align-items:center; justify-content:center; color:white; font-size:24px; box-shadow: 0 4px 10px #000;">➕</div>
         </div>
     </div>
 
     <div id="chat-screen" class="screen">
         <div class="header">
-            <div style="display:flex; align-items:center; gap:10px;">
-                <button class="btn-icon" onclick="irHome()" style="color:white;">←</button>
-                <div class="avatar" id="chat-avatar" style="width:35px; height:35px; margin:0; font-size:14px;">?</div>
-                <div>
-                    <div id="chat-nome" style="font-weight:bold; font-size:16px;">Nome</div>
-                    <div id="chat-id-sub" style="font-size:10px; color:#8696a0;">ID: ...</div>
-                </div>
+            <button onclick="irHome()" style="background:none; border:none; color:white; font-size:22px;">←</button>
+            <div style="flex:1; margin-left:10px;">
+                <div id="chat-nome" style="font-weight:bold;">Nome</div>
+                <div id="chat-id-sub" style="font-size:10px; color:#8696a0;">ID</div>
             </div>
+            <button id="btn-link-grp" class="btn-link" onclick="gerarLinkGrupo()" style="display:none;">🔗 Link Grupo</button>
         </div>
         <div id="chat-container"></div>
         <div class="footer">
             <div class="input-bg">
-                <label class="btn-icon" style="margin:0;">📎<input type="file" style="display:none;" onchange="enviarMidia(this)"></label>
+                <label>📎<input type="file" style="display:none;" onchange="enviarMidia(this)"></label>
                 <input type="text" id="msg-input" placeholder="Mensagem">
             </div>
             <button class="btn-action" onclick="enviarTexto()">➤</button>
@@ -89,25 +74,18 @@
     </div>
 
     <div id="profile-screen" class="screen">
-        <div class="header">
-            <button class="btn-icon" onclick="irHome()" style="color:white;">←</button>
-            <h1 style="color:white; font-size:18px;">Perfil</h1>
-        </div>
-        <div class="content-scroll" style="text-align:center; padding-top:40px;">
-            <div class="avatar" style="width:100px; height:100px; font-size:40px; margin: 0 auto 20px;" id="p-avatar">?</div>
-            <h2 id="p-nome">Nome</h2>
-            <p id="p-id" style="color:var(--wa-green); font-family:monospace;"></p>
-            <button class="btn-copy" style="padding:10px 20px; font-size:14px;" onclick="copiarID()">Copiar Meu ID</button>
-            <br><br>
-            <button onclick="location.reload()" style="background:none; border:1px solid #f15c5c; color:#f15c5c; padding:8px; border-radius:5px; cursor:pointer;">Reiniciar App</button>
+        <div class="header"><button onclick="irHome()" style="background:none; border:none; color:white; font-size:22px;">←</button><h1>Configurações</h1></div>
+        <div class="content-scroll" style="text-align:center; padding:20px;">
+            <h2 id="p-nome-exibe">Nome</h2>
+            <button onclick="excluirECriarNova()" style="background:var(--danger); color:white; border:none; padding:15px; border-radius:10px; width:100%; margin-top:50px;">EXCLUIR E CRIAR NOVA IDENTIDADE</button>
         </div>
     </div>
 
     <script>
         let db, peer, MEU_ID, MEU_NOME, CHAT_ATUAL = null;
+        const DB_NAME = "ZVault_P2P_V16";
 
-        // BANCO DE DADOS
-        const request = indexedDB.open("ZVault_V10_Final", 1);
+        const request = indexedDB.open(DB_NAME, 1);
         request.onupgradeneeded = e => {
             const d = e.target.result;
             d.createObjectStore("mensagens", { autoIncrement: true });
@@ -126,41 +104,70 @@
                     db.transaction("config","readwrite").objectStore("config").put(d, "perfil");
                 }
                 MEU_ID = d.id; MEU_NOME = d.nome;
+                document.getElementById('meu-id-txt').innerText = MEU_ID;
+                document.getElementById('meu-nome-txt').innerText = MEU_NOME;
+                
                 iniciarPeer();
                 verificarConviteURL();
-                renderizarHome();
             };
         };
 
         function iniciarPeer() {
-            document.getElementById('meu-nome-txt').innerText = MEU_NOME;
-            document.getElementById('meu-id-txt').innerText = MEU_ID;
-            
             peer = new Peer(MEU_ID, { host:'0.peerjs.com', secure:true, port:443 });
             peer.on('connection', conn => {
                 conn.on('data', data => {
                     const idSalvar = data.isGrp ? data.grpId : data.origem;
                     const nomeSalvar = data.isGrp ? data.grpNome : data.remetente;
-                    db.transaction("contatos", "readwrite").objectStore("contatos").put({ id: idSalvar, nome: nomeSalvar, tipo: data.isGrp?'grupo':'pessoal' });
+                    db.transaction("contatos", "readwrite").objectStore("contatos").put({ 
+                        id: idSalvar, 
+                        nome: nomeSalvar, 
+                        tipo: data.isGrp?'grupo':'pessoal',
+                        membros: data.membros || [] 
+                    });
                     salvarMsg(idSalvar, data, 'recebida');
                     renderizarHome();
                 });
             });
+            renderizarHome();
         }
 
-        function enviarTexto() {
-            const input = document.getElementById('msg-input');
-            if(!input.value || !CHAT_ATUAL) return;
-            disparar({ tipo: 'texto', conteudo: input.value });
-            input.value = "";
+        function verificarConviteURL() {
+            const params = new URLSearchParams(window.location.search);
+            if (params.has('gId')) {
+                const gId = params.get('gId');
+                const gNome = params.get('gNome');
+                const membros = params.get('m').split(',');
+                if (!membros.includes(MEU_ID)) membros.push(MEU_ID);
+                
+                db.transaction("contatos", "readwrite").objectStore("contatos").put({ 
+                    id: gId, nome: gNome, tipo: 'grupo', membros: membros 
+                });
+                
+                // Limpa a URL e entra no grupo
+                window.history.replaceState({}, '', window.location.pathname);
+                alert("Você entrou no grupo: " + gNome);
+                location.reload(); 
+            }
         }
 
-        function enviarMidia(input) {
-            const f = input.files[0];
-            if(!f) return;
-            const reader = new FileReader();
-            reader.onload = e => disparar({ tipo: f.type.split('/')[0], conteudo: e.target.result });
-            reader.readAsDataURL(f);
+        function gerarLinkGrupo() {
+            db.transaction("contatos").objectStore("contatos").get(CHAT_ATUAL).onsuccess = e => {
+                const c = e.target.result;
+                const link = window.location.origin + window.location.pathname + 
+                             `?gId=${c.id}&gNome=${encodeURIComponent(c.nome)}&m=${c.membros.join(',')}`;
+                navigator.clipboard.writeText(link);
+                alert("Link do Grupo copiado! Envie para quem você quer convidar.");
+            };
+        }
+
+        function novoGrupo() {
+            const n = prompt("Nome do Grupo:");
+            if(n) {
+                const idG = "GRP-" + Date.now();
+                const grupo = { id: idG, nome: n, tipo: 'grupo', membros: [MEU_ID] };
+                db.transaction("contatos", "readwrite").objectStore("contatos").put(grupo);
+                renderizarHome();
+            }
         }
 
         function disparar(obj) {
@@ -168,12 +175,39 @@
             db.transaction("contatos").objectStore("contatos").get(CHAT_ATUAL).onsuccess = e => {
                 const c = e.target.result;
                 if(c.tipo === 'grupo') {
-                    msg.isGrp = true; msg.grpId = CHAT_ATUAL; msg.grpNome = c.nome;
+                    msg.isGrp = true; msg.grpId = CHAT_ATUAL; msg.grpNome = c.nome; msg.membros = c.membros;
                     c.membros.forEach(m => { if(m !== MEU_ID) peer.connect(m).on('open', function(){ this.send(msg); }); });
                 } else {
                     peer.connect(CHAT_ATUAL).on('open', function(){ this.send(msg); });
                 }
                 salvarMsg(CHAT_ATUAL, msg, 'enviada');
+            };
+        }
+
+        // Funções de Interface (Home, Perfil, Chat)
+        function abrirChat(id, nome) {
+            CHAT_ATUAL = id;
+            document.getElementById('chat-nome').innerText = nome;
+            document.getElementById('chat-id-sub').innerText = id;
+            
+            // Só mostra o botão de link se for um grupo
+            document.getElementById('btn-link-grp').style.display = id.startsWith('GRP') ? 'block' : 'none';
+            
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            document.getElementById('chat-screen').classList.add('active');
+            carregarMensagens();
+        }
+
+        function renderizarHome() {
+            const lista = document.getElementById('lista-conversas');
+            lista.innerHTML = "";
+            db.transaction("contatos").objectStore("contatos").getAll().onsuccess = e => {
+                e.target.result.forEach(c => {
+                    const div = document.createElement('div'); div.className = 'item';
+                    div.onclick = () => abrirChat(c.id, c.nome);
+                    div.innerHTML = `<div class="avatar" style="background:${c.tipo==='grupo'?'#34b7f1':'#6a7175'}">${c.nome[0].toUpperCase()}</div><div><b>${c.nome}</b><br><small>${c.id}</small></div>`;
+                    lista.appendChild(div);
+                });
             };
         }
 
@@ -193,10 +227,7 @@
                         const div = document.createElement('div');
                         div.className = `msg ${d.direcao}`;
                         let h = (d.isGrp && d.direcao === 'recebida') ? `<small style="color:var(--wa-green)">${d.remetente}</small><br>` : '';
-                        if(d.tipo === 'texto') h += `<div>${d.conteudo}</div>`;
-                        else if(d.tipo === 'image') h += `<img src="${d.conteudo}">`;
-                        else if(d.tipo === 'video') h += `<video src="${d.conteudo}" controls></video>`;
-                        else h += `<audio src="${d.conteudo}" controls></audio>`;
+                        h += d.tipo === 'texto' ? `<div>${d.conteudo}</div>` : `<${d.tipo} src="${d.conteudo}" controls></${d.tipo}>`;
                         div.innerHTML = h + `<span class="time">${d.hora}</span>`;
                         cont.appendChild(div);
                     }
@@ -206,71 +237,31 @@
             };
         }
 
-        function renderizarHome() {
-            const lista = document.getElementById('lista-conversas');
-            lista.innerHTML = "";
-            db.transaction("contatos").objectStore("contatos").getAll().onsuccess = e => {
-                e.target.result.forEach(c => {
-                    const div = document.createElement('div'); div.className = 'item';
-                    div.onclick = () => abrirChat(c.id, c.nome);
-                    div.innerHTML = `<div class="avatar" style="background:${c.tipo==='grupo'?'#00a884':'#6a7175'}">${c.nome[0].toUpperCase()}</div><div><b>${c.nome}</b><br><small style="color:#8696a0">${c.id}</small></div>`;
-                    lista.appendChild(div);
-                });
-            };
+        function enviarTexto() {
+            const input = document.getElementById('msg-input');
+            if(!input.value || !CHAT_ATUAL) return;
+            disparar({ tipo: 'texto', conteudo: input.value });
+            input.value = "";
         }
 
-        function abrirChat(id, nome) {
-            CHAT_ATUAL = id;
-            document.getElementById('chat-nome').innerText = nome;
-            document.getElementById('chat-id-sub').innerText = "ID: " + id;
-            document.getElementById('chat-avatar').innerText = nome[0].toUpperCase();
-            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-            document.getElementById('chat-screen').classList.add('active');
-            carregarMensagens();
-        }
-
-        function irHome() { CHAT_ATUAL = null; document.querySelectorAll('.screen').forEach(s => s.classList.remove('active')); document.getElementById('home-screen').classList.add('active'); renderizarHome(); }
-        
-        function abrirPerfil() {
-            document.getElementById('p-nome').innerText = MEU_NOME;
-            document.getElementById('p-id').innerText = MEU_ID;
-            document.getElementById('p-avatar').innerText = MEU_NOME[0].toUpperCase();
-            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-            document.getElementById('profile-screen').classList.add('active');
+        function enviarMidia(input) {
+            const f = input.files[0];
+            if(!f) return;
+            const reader = new FileReader();
+            reader.onload = e => disparar({ tipo: f.type.split('/')[0], conteudo: e.target.result });
+            reader.readAsDataURL(f);
         }
 
         function novoContacto() {
-            const id = prompt("ID (Ex: ID-1234):");
+            const id = prompt("ID da pessoa:");
             const n = prompt("Nome:");
             if(id && n) { db.transaction("contatos", "readwrite").objectStore("contatos").put({ id, nome: n, tipo:'pessoal' }); renderizarHome(); }
         }
 
-        function novoGrupo() {
-            const n = prompt("Nome do Grupo:");
-            const ids = prompt("IDs dos membros (separados por vírgula):");
-            if(n && ids) {
-                const idG = "GRP-" + Date.now();
-                db.transaction("contatos", "readwrite").objectStore("contatos").put({ id: idG, nome: n, tipo: 'grupo', membros: ids.split(',').map(x => x.trim()) });
-                renderizarHome();
-            }
-        }
-
-        function copiarID() { navigator.clipboard.writeText(MEU_ID); alert("ID Copiado!"); }
-        
-        function copiarLink() {
-            const link = window.location.origin + window.location.pathname + `?id=${MEU_ID}&nome=${MEU_NOME}`;
-            navigator.clipboard.writeText(link);
-            alert("Link de Convite Copiado! Se alguém clicar, você será adicionado automaticamente.");
-        }
-
-        function verificarConviteURL() {
-            const p = new URLSearchParams(window.location.search);
-            if(p.has('id')) {
-                db.transaction("contatos", "readwrite").objectStore("contatos").put({ id: p.get('id'), nome: p.get('nome') || 'Novo Amigo', tipo: 'pessoal' });
-                window.history.replaceState({}, '', window.location.pathname);
-                renderizarHome();
-            }
-        }
+        function irHome() { CHAT_ATUAL = null; document.querySelectorAll('.screen').forEach(s => s.classList.remove('active')); document.getElementById('home-screen').classList.add('active'); renderizarHome(); }
+        function abrirPerfil() { document.getElementById('p-nome-exibe').innerText = MEU_NOME; document.querySelectorAll('.screen').forEach(s => s.classList.remove('active')); document.getElementById('profile-screen').classList.add('active'); }
+        function excluirECriarNova() { if(confirm("Apagar tudo e criar novo?")) { indexedDB.deleteDatabase(DB_NAME); location.reload(); } }
     </script>
 </body>
-</html>
+    </html>
+    
